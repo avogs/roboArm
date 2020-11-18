@@ -7,7 +7,7 @@ Servo baseServo;
 Servo lowServo1;
 Servo lowServo2;
 Servo midServo;
-//Servo upperServo
+//Servo upperServo // Uncomment this once the grasper at the end of the arm is added.
 
 // Set starting positions for the servos
 int basePos = 90;
@@ -15,20 +15,17 @@ int low1Pos = 90;
 int low2Pos = 180 - low1Pos;
 int midPos = 90;
 // int upperPos = 90;
-int x_pos = 9; // X position of arm tip in centimeters (used in moveTo()) (approximate)
-int y_pos = 9; // Y position of arm tip in centimeters (used in moveTo()) (approximate)
-int base_mov = 90; // Position of base in degrees (used in moveTo()) (approximate)
+int x_pos = 9;            // X position of arm tip in centimeters (used in moveTo()) (approximate)
+int y_pos = 9;            // Y position of arm tip in centimeters (used in moveTo()) (approximate)
+int base_mov = 90;        // Position of base in degrees (used in moveTo()) (approximate)
 
-// comment this?!?
-int index = 0;  //
-int input;  //
-char inputAsChars[10];  //
+char inputAsChars[10];    // A buffer to hold the data from the bluetooth module
+int input;                // Holds the received data after it's been converted to an int
 boolean command = false;  // Senses if a command has been sent
-boolean isOn = false;  //
-int armLength = 9; // arms = ~9cm?
-int baseAngle;
-int midAngle;
-int theta;
+int armLength = 9;        // arms = ~9cm? (should re-measure for more accurate movements)
+int baseAngle;            // The angle of the base servo
+int midAngle;             // The angle of the middle servo
+int theta;                // Used in the trig calculations for the servo angles
 double r;
 
 void setup() {
@@ -39,7 +36,7 @@ void setup() {
    lowServo1.attach(3);
    lowServo2.attach(4);
    midServo.attach(5);
-   //upperServo.attach(6);
+   //upperServo.attach(6); // Add once grasping arm is added
    delay(1000);
 }
 
@@ -82,15 +79,13 @@ void moveTo(int x, int y, int base) {
   baseAngle = theta + ((180-midAngle)/2);
   delay(100);
 
-  // Set limits to angles so servos wont hit stuff
+  // Set limits to angles to prevent going past the limits on the arm's joints.
   if (midAngle < 25) {
     midAngle = 25;
   }
-
   if (baseAngle < 10) {
     baseAngle = 10;
   }
-
   if (baseAngle > 170) {
     baseAngle = 170;
   }
@@ -142,40 +137,3 @@ void processCommand(int input) {
   }
   moveTo(x_pos, y_pos, base_mov);
 }
-
-/*
-char[] copyCharSubArray(char[] arr, int first, int last) {
-  char newArray[(last-first)];
-  for (int i = first; i < last; i++) {
-    newArray[i] = arr[i]
-  }
-  return newArray;
-}
-
-
-// This is some of the sweep stuff
-/*
-int pos = 0;    // variable to store the servo position
-
-void setup() {
-}
-
-void loop() {
-    myservo.attach(2);  // attaches the servo on pin 9 to the servo object
-    myservo2.attach(3);
-    myservo3.attach(4);
-  for (pos = 75; pos <= 105; pos += 1) { // goes from 0 degrees to 180 degrees
-                                        // in steps of 1 degree
-     myservo.write(pos);                // tell servo to go to position in variable 'pos'
-     myservo2.write(180-pos);
-     myservo3.write(pos*2-100);
-     delay(60);                         // waits 15ms for the servo to reach the position
-  }
-  for (pos = 105; pos >= 75; pos -= 1) { // goes from 180 degrees to 0 degrees
-     myservo.write(pos);                // tell servo to go to position in variable 'pos'
-     myservo2.write(180-pos);
-     myservo3.write(pos*2-100);
-     delay(60);                         // waits 15ms for the servo to reach the position
-  }
-}
-*/
